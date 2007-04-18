@@ -134,7 +134,7 @@ class parser:
         findpercent = re.compile('^%.*t$')
         lstripquotes = re.compile(r'^\\"')
         rstripquotes = re.compile(r'\\"$')
-        
+        self._names = []
         
         for element in format.split(' '):
 
@@ -185,7 +185,7 @@ class parser:
                 data[k] = v
             return data
         
-        raise ApacheLogParserError("Unable to parse: %s" % line)
+        raise ApacheLogParserError("Unable to parse: %s with the %s regular expression" % ( line, self._pattern ) )
 
     def alias(self, name):
         """
