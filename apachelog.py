@@ -85,13 +85,14 @@ if you need to deal with log from multiple servers in different
 timezones.
 """
 
-__version__ = "1.0"
+__version__ = "1.1"
 __license__ = """Released under the same terms as Perl.
 See: http://dev.perl.org/licenses/
 """
 __author__ = "Harry Fuecks <hfuecks@gmail.com>"
 __contributors__ = [
     "Peter Hickman <peterhi@ntlworld.com>",
+    "Loic Dachary <loic@dachary.org>"
     ]
     
 import re

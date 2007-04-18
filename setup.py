@@ -9,7 +9,7 @@ if not hasattr(DistributionMetadata,'classifiers'):
     
 setup(
     name = 'apachelog',
-    version = '1.0',
+    version = '1.1',
     description = 'Access log parser in python, ported from '\
     'Peter Hickman\'s Apache::LogRegex Perl moduleUniversal.',
     long_description = """\
