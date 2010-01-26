@@ -57,13 +57,13 @@ This module provides three of the most common log formats in the
 formats dictionary;
 
     # Common Log Format (CLF)
-    p = apachelog.parser(apachlog.formats['common'])
+    p = apachelog.parser(apachelog.formats['common'])
 
     # Common Log Format with Virtual Host
-    p = apachelog.parser(apachlog.formats['vhcommon'])
+    p = apachelog.parser(apachelog.formats['vhcommon'])
 
     # NCSA extended/combined log format
-    p = apachelog.parser(apachlog.formats['extended'])
+    p = apachelog.parser(apachelog.formats['extended'])
 
 For notes regarding performance while reading lines from a file
 in Python, see <http://effbot.org/zone/readline-performance.htm>.
@@ -131,7 +131,7 @@ class parser:
         subpatterns = []
 
         findquotes = re.compile(r'^\\"')
-        findreferreragent = re.compile('Referer|User-Agent')
+        findreferreragent = re.compile('Referer|User-Agent', re.I)
         findpercent = re.compile('^%.*t$')
         lstripquotes = re.compile(r'^\\"')
         rstripquotes = re.compile(r'\\"$')
@@ -265,7 +265,7 @@ formats = {
     'vhcommon':r'%v %h %l %u %t \"%r\" %>s %b',
 
     # NCSA extended/combined log format
-    'extended':r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"',
+    'extended':r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"',
     }
 
 if __name__ == '__main__':
@@ -297,8 +297,10 @@ if __name__ == '__main__':
                           r'_boats=1176818&slim=broker&&hosturl=giffordmarine&&ywo='\
                           r'giffordmarine& HTTP/1.1" 200 2888 "http://search.yahoo.com/'\
                           r'bin/search?p=\"grady%20white%20306%20bimini\"" '\
-                          r'"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; '\
-                          r'YPC 3.0.3; yplus 4.0.00d)"'
+                          r'"\"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; '\
+                          r'YPC 3.0.3; yplus 4.0.00d)\""'
+#                          r'"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; '\
+#                          r'YPC 3.0.3; yplus 4.0.00d)"'
             self.p = parser(self.format)
 
         def testpattern(self):
@@ -387,8 +389,10 @@ if __name__ == '__main__':
                 )
             self.assertEqual(
                 data['%{User-Agent}i'],
-                'Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; YPC 3.0.3; '\
-                'yplus 4.0.00d)',
+                '\\"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; YPC 3.0.3; '\
+                'yplus 4.0.00d)\\"',
+#                'Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; YPC 3.0.3; '\
+#                'yplus 4.0.00d)',
                 msg = 'Line 3 %{User-Agent}i'
                 )
 
