@@ -290,7 +290,10 @@ class parser:
 
         Takes and returns a string fieldname
         """
-        return name
+        try:
+            return self.format_to_name[name]
+        except KeyError:
+            return name
 
     def pattern(self):
         """
