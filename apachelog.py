@@ -101,6 +101,99 @@ class ApacheLogParserError(Exception):
     pass
 
 class parser:
+    format_to_name = {
+        # Explanatory comments copied from
+        # http://httpd.apache.org/docs/2.2/mod/mod_log_config.html
+        # Remote IP-address
+        '%a':'remote_ip',
+        # Local IP-address
+        '%A':'local_ip',
+        # Size of response in bytes, excluding HTTP headers.
+        '%B':'response_bytes',
+        # Size of response in bytes, excluding HTTP headers. In CLF
+        # format, i.e. a "-" rather than a 0 when no bytes are sent.
+        '%b':'response_bytes_clf',
+        # The contents of cookie Foobar in the request sent to the server.
+        # Only version 0 cookies are fully supported.
+        #'%{Foobar}C':'TODO',
+        # The time taken to serve the request, in microseconds.
+        '%D':'response_time_us',
+        # The contents of the environment variable FOOBAR
+        #'%{FOOBAR}e':'TODO',
+        # Filename
+        '%f':'filename',
+        # Remote host
+        '%h':'remote_host',
+        # The request protocol
+        '%H':'request_protocol',
+        # The contents of Foobar: header line(s) in the request sent to
+        # the server. Changes made by other modules (e.g. mod_headers)
+        # affect this.
+        #'%{Foobar}i':'TODO',
+        # Number of keepalive requests handled on this connection.
+        # Interesting if KeepAlive is being used, so that, for example,
+        # a "1" means the first keepalive request after the initial one,
+        # "2" the second, etc...; otherwise this is always 0 (indicating
+        # the initial request). Available in versions 2.2.11 and later.
+        '%k':'keepalive_num',
+        # Remote logname (from identd, if supplied). This will return a
+        # dash unless mod_ident is present and IdentityCheck is set On.
+        '%l':'remote_logname',
+        # The request method
+        '%m':'request_method',
+        # The contents of note Foobar from another module.
+        #'%{Foobar}n':'TODO',
+        # The contents of Foobar: header line(s) in the reply.
+        #'%{Foobar}o':'TODO',
+        # The canonical port of the server serving the request
+        '%p':'server_port',
+        # The canonical port of the server serving the request or the
+        # server's actual port or the client's actual port. Valid
+        # formats are canonical, local, or remote.
+        #'%{format}p':"TODO",
+        # The process ID of the child that serviced the request.
+        '%P':'process_id',
+        # The process ID or thread id of the child that serviced the
+        # request. Valid formats are pid, tid, and hextid. hextid requires
+        # APR 1.2.0 or higher.
+        #'%{format}P':'TODO',
+        # The query string (prepended with a ? if a query string exists,
+        # otherwise an empty string)
+        '%q':'query_string',
+        # First line of request
+        '%r':'first_line',
+        # The handler generating the response (if any).
+        '%R':'response_handler',
+        # Status. For requests that got internally redirected, this is
+        # the status of the *original* request --- %>s for the last.
+        '%s':'status',
+        # Time the request was received (standard english format)
+        '%t':'time',
+        # The time, in the form given by format, which should be in
+        # strftime(3) format. (potentially localized)
+        #'%{format}t':'TODO',
+        # The time taken to serve the request, in seconds.
+        '%T':'response_time_sec',
+        # Remote user (from auth; may be bogus if return status (%s) is 401)
+        '%u':'remote_user',
+        # The URL path requested, not including any query string.
+        '%U':'url_path',
+        # The canonical ServerName of the server serving the request.
+        '%v':'canonical_server_name',
+        # The server name according to the UseCanonicalName setting.
+        '%V':'server_name_config', #TODO: Needs better name
+        # Connection status when response is completed:
+        # X = connection aborted before the response completed.
+        # + = connection may be kept alive after the response is sent.
+        # - = connection will be closed after the response is sent.
+        '%X':'completed_connection_status',
+        # Bytes received, including request and headers, cannot be zero.
+        # You need to enable mod_logio to use this.
+        '%I':'bytes_received',
+        # Bytes sent, including headers, cannot be zero. You need to
+        # enable mod_logio to use this
+        '%O':'bytes_sent',
+    }
 
     def __init__(self, format):
         """
