@@ -16,7 +16,7 @@ Example:
 
     # Format copied and pasted from Apache conf - use raw string + single quotes
     format = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
-    
+
     p = apachelog.parser(format)
 
     for line in open('/var/apache/access.log'):
@@ -94,21 +94,21 @@ __contributors__ = [
     "Peter Hickman <peterhi@ntlworld.com>",
     "Loic Dachary <loic@dachary.org>"
     ]
-    
+
 import re
 
 class ApacheLogParserError(Exception):
     pass
 
 class parser:
-    
+
     def __init__(self, format):
         """
         Takes the log format from an Apache configuration file.
 
         Best just copy and paste directly from the .conf file
         and pass using a Python raw string e.g.
-        
+
         format = r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'
         p = apachelog.parser(format)
         """
@@ -116,7 +116,7 @@ class parser:
         self._regex = None
         self._pattern = ''
         self._parse_format(format)
-    
+
     def _parse_format(self, format):
         """
         Converts the input format to a regular
@@ -127,7 +127,7 @@ class parser:
         """
         format = format.strip()
         format = re.sub('[ \t]+',' ',format)
-        
+
         subpatterns = []
 
         findquotes = re.compile(r'^\\"')
@@ -136,7 +136,7 @@ class parser:
         lstripquotes = re.compile(r'^\\"')
         rstripquotes = re.compile(r'\\"$')
         self._names = []
-        
+
         for element in format.split(' '):
 
             hasquotes = 0
@@ -145,31 +145,31 @@ class parser:
             if hasquotes:
                 element = lstripquotes.sub('', element)
                 element = rstripquotes.sub('', element)
-            
+
             self._names.append(self.alias(element))
-            
+
             subpattern = '(\S*)'
-            
+
             if hasquotes:
                 if element == '%r' or findreferreragent.search(element):
                     subpattern = r'\"([^"\\]*(?:\\.[^"\\]*)*)\"'
                 else:
                     subpattern = r'\"([^\"]*)\"'
-                
+
             elif findpercent.search(element):
                 subpattern = r'(\[[^\]]+\])'
-                
+
             elif element == '%U':
                 subpattern = '(.+?)'
-            
+
             subpatterns.append(subpattern)
-        
+
         self._pattern = '^' + ' '.join(subpatterns) + '$'
         try:
             self._regex = re.compile(self._pattern)
         except Exception, e:
             raise ApacheLogParserError(e)
-        
+
     def parse(self, line):
         """
         Parses a single line from the log file and returns
@@ -179,13 +179,13 @@ class parser:
         """
         line = line.strip()
         match = self._regex.match(line)
-        
+
         if match:
             data = {}
             for k, v in zip(self._names, match.groups()):
                 data[k] = v
             return data
-        
+
         raise ApacheLogParserError("Unable to parse: %s with the %s regular expression" % ( line, self._pattern ) )
 
     def alias(self, name):
@@ -194,7 +194,7 @@ class parser:
         field names to something else. This method is called
         when the parser is constructed, not when actually parsing
         a log file
-        
+
         Takes and returns a string fieldname
         """
         return name
@@ -236,7 +236,7 @@ def parse_date(date):
     YYYYMMDDHH24IISS e.g. 20061205105144 and second the
     timezone offset as is e.g.;
 
-    parse_date('[05/Dec/2006:10:51:44 +0000]')  
+    parse_date('[05/Dec/2006:10:51:44 +0000]')
     >> ('20061205105144', '+0000')
 
     It does not attempt to adjust the timestamp according
@@ -333,7 +333,7 @@ if __name__ == '__main__':
                 msg = 'Line 1 %{User-Agent}i'
                 )
 
-        
+
         def testline2(self):
             data = self.p.parse(self.line2)
             self.assertEqual(data['%h'], '212.74.15.68', msg = 'Line 2 %h')
