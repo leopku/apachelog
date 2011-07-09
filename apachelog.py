@@ -169,6 +169,7 @@ class parser:
         # otherwise an empty string)
         '%q':'query_string',
         # First line of request
+        # e.g., what you'd see in the logs as 'GET / HTTP/1.1'
         '%r':'first_line',
         # The handler generating the response (if any).
         '%R':'response_handler',
@@ -204,7 +205,7 @@ class parser:
         '%O':'bytes_sent',
     }
 
-    def __init__(self, format, use_names=False):
+    def __init__(self, format, use_friendly_names=False):
         """
         Takes the log format from an Apache configuration file.
 
@@ -217,7 +218,7 @@ class parser:
         self._names = []
         self._regex = None
         self._pattern = ''
-        self._use_names = use_names
+        self._use_friendly_names = use_friendly_names
         self._parse_format(format)
 
     def _parse_format(self, format):
@@ -249,7 +250,7 @@ class parser:
                 element = lstripquotes.sub('', element)
                 element = rstripquotes.sub('', element)
 
-            if self._use_names:
+            if self._use_friendly_names:
                 self._names.append(self.alias(element))
             else:
                 self._names.append(element)
