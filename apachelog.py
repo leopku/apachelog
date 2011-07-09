@@ -100,6 +100,14 @@ import re
 class ApacheLogParserError(Exception):
     pass
 
+class AttrDict(dict):
+    """
+    Allows dicts to be accessed via dot notation as well as subscripts
+    Makes using the friendly names nicer
+    """
+    def __getattr__(self, name):
+        return self[name]
+
 class parser:
     format_to_name = {
         # Explanatory comments copied from
