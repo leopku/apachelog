@@ -196,7 +196,7 @@ class parser:
         '%O':'bytes_sent',
     }
 
-    def __init__(self, format):
+    def __init__(self, format, use_names=False):
         """
         Takes the log format from an Apache configuration file.
 
@@ -209,6 +209,7 @@ class parser:
         self._names = []
         self._regex = None
         self._pattern = ''
+        self._use_names = use_names
         self._parse_format(format)
 
     def _parse_format(self, format):
@@ -240,7 +241,10 @@ class parser:
                 element = lstripquotes.sub('', element)
                 element = rstripquotes.sub('', element)
 
-            self._names.append(self.alias(element))
+            if self._use_names:
+                self._names.append(self.alias(element))
+            else:
+                self._names.append(element)
 
             subpattern = '(\S*)'
 
