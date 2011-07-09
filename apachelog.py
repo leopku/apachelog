@@ -288,7 +288,7 @@ class parser:
         match = self._regex.match(line)
 
         if match:
-            data = {}
+            data = AttrDict()
             for k, v in zip(self._names, match.groups()):
                 data[k] = v
             return data
