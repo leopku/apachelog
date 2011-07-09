@@ -167,6 +167,7 @@ class parser:
         # Status. For requests that got internally redirected, this is
         # the status of the *original* request --- %>s for the last.
         '%s':'status',
+        '%>s':'last_status',
         # Time the request was received (standard english format)
         '%t':'time',
         # The time, in the form given by format, which should be in
