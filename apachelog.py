@@ -123,11 +123,13 @@ class parser:
         '%b':'response_bytes_clf',
         # The contents of cookie Foobar in the request sent to the server.
         # Only version 0 cookies are fully supported.
-        #'%{Foobar}C':'TODO',
+        #'%{Foobar}C':'',
+        '%{}C':'cookie',
         # The time taken to serve the request, in microseconds.
         '%D':'response_time_us',
         # The contents of the environment variable FOOBAR
-        #'%{FOOBAR}e':'TODO',
+        #'%{FOOBAR}e':'',
+        '%{}e':'env',
         # Filename
         '%f':'filename',
         # Remote host
@@ -137,7 +139,8 @@ class parser:
         # The contents of Foobar: header line(s) in the request sent to
         # the server. Changes made by other modules (e.g. mod_headers)
         # affect this.
-        #'%{Foobar}i':'TODO',
+        #'%{Foobar}i':'',
+        '%{}i':'header',
         # Number of keepalive requests handled on this connection.
         # Interesting if KeepAlive is being used, so that, for example,
         # a "1" means the first keepalive request after the initial one,
@@ -150,21 +153,25 @@ class parser:
         # The request method
         '%m':'request_method',
         # The contents of note Foobar from another module.
-        #'%{Foobar}n':'TODO',
+        #'%{Foobar}n':'',
+        '%{}n':'note',
         # The contents of Foobar: header line(s) in the reply.
-        #'%{Foobar}o':'TODO',
+        #'%{Foobar}o':'',
+        '%{}o':'reply_header',
         # The canonical port of the server serving the request
         '%p':'server_port',
         # The canonical port of the server serving the request or the
         # server's actual port or the client's actual port. Valid
         # formats are canonical, local, or remote.
-        #'%{format}p':"TODO",
+        #'%{format}p':"",
+        '%{}p':'port',
         # The process ID of the child that serviced the request.
         '%P':'process_id',
         # The process ID or thread id of the child that serviced the
         # request. Valid formats are pid, tid, and hextid. hextid requires
         # APR 1.2.0 or higher.
-        #'%{format}P':'TODO',
+        #'%{format}P':'',
+        '%{}P':'pid',
         # The query string (prepended with a ? if a query string exists,
         # otherwise an empty string)
         '%q':'query_string',
@@ -302,10 +309,26 @@ class parser:
         when the parser is constructed, not when actually parsing
         a log file
 
+        For custom format names, such as %{Foobar}C, 'Foobar' is referred to
+        (in this function) as the custom_format and '%{}C' as the name
+
+        If the custom_format has a '-' in it (and is not a time format), then the
+        '-' is replaced with a '_' so the name remains a valid identifier.
+
         Takes and returns a string fieldname
         """
+
+        custom_format = ''
+
+        if name.startswith('%{'):
+            custom_format = '_' + name[2:-2]
+            name = '%{}' + name[-1]
+
+            if name != '%{}t':
+                custom_format = custom_format.replace('-', '_')
+
         try:
-            return self.format_to_name[name]
+            return self.format_to_name[name] + custom_format
         except KeyError:
             return name
 
@@ -529,7 +552,7 @@ if __name__ == '__main__':
                           r'%b \"%{Referer}i\" \"%{User-Agent}i\"'
             self.fields = ('remote_host remote_logname remote_user time '
                            'first_line last_status response_bytes_clf '
-                           '%{Referer}i %{User-Agent}i').split(' ')
+                           'header_Referer header_User_Agent').split(' ')
             self.pattern = '^(\\S*) (\\S*) (\\S*) (\\[[^\\]]+\\]) '\
                            '\\\"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)\\\" '\
                            '(\\S*) (\\S*) \\\"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)\\\" '\
@@ -575,12 +598,12 @@ if __name__ == '__main__':
             self.assertEqual(data.last_status, '200', msg = 'Line 1 last_status')
             self.assertEqual(data.response_bytes_clf, '2607', msg = 'Line 1 response_bytes_clf')
             self.assertEqual(
-                data['%{Referer}i'],
+                data.header_Referer,
                 'http://peterhi.dyndns.org/bandwidth/index.html',
                 msg = 'Line 1 %{Referer}i'
                 )
             self.assertEqual(
-                data['%{User-Agent}i'],
+                data.header_User_Agent,
                 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.2) Gecko/20021202',
                 msg = 'Line 1 %{User-Agent}i'
                 )
@@ -604,12 +627,12 @@ if __name__ == '__main__':
             self.assertEqual(data.last_status, '200', msg = 'Line 2 last_status')
             self.assertEqual(data.response_bytes_clf, '2607', msg = 'Line 2 response_bytes_clf')
             self.assertEqual(
-                data['%{Referer}i'],
+                data.header_Referer,
                 'http://peterhi.dyndns.org/bandwidth/index.html',
                 msg = 'Line 2 %{Referer}i'
                 )
             self.assertEqual(
-                data['%{User-Agent}i'],
+                data.header_User_Agent,
                 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.2) Gecko/20021202',
                 msg = 'Line 2 %{User-Agent}i'
                 )
@@ -634,13 +657,13 @@ if __name__ == '__main__':
             self.assertEqual(data.last_status, '200', msg = 'Line 3 last_status')
             self.assertEqual(data.response_bytes_clf, '2888', msg = 'Line 3 response_bytes_clf')
             self.assertEqual(
-                data['%{Referer}i'],
+                data.header_Referer,
                 r'http://search.yahoo.com/bin/search?p=\"grady%20white%20306'\
                 r'%20bimini\"',
                 msg = 'Line 3 %{Referer}i'
                 )
             self.assertEqual(
-                data['%{User-Agent}i'],
+                data.header_User_Agent,
                 '\\"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; YPC 3.0.3; '\
                 'yplus 4.0.00d)\\"',
 #                'Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; YPC 3.0.3; '\
