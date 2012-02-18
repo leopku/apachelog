@@ -1,6 +1,6 @@
 import unittest
 
-from ..parser import ApacheLogParserError, parser, months, parse_date, formats
+from ..parser import ApacheLogParserError, parser, formats
 
 
 class TestApacheLogParser(unittest.TestCase):
@@ -140,10 +140,6 @@ class TestApacheLogParser(unittest.TestCase):
         self.assertEqual(data['%b'],'xyz', '%c')
         self.assertEqual(data['%c'],'bar', '%c')
 
-    def testparsedate(self):
-        date = '[05/Dec/2006:10:51:44 +0000]'
-        self.assertEqual(('20061205105144','+0000'),parse_date(date))
-
 class TestApacheLogParserFriendlyNames(unittest.TestCase):
 
     def setUp(self):
@@ -281,10 +277,6 @@ class TestApacheLogParserFriendlyNames(unittest.TestCase):
         self.assertEqual(data['%a'],'foo', '%a')
         self.assertEqual(data['%b'],'xyz', '%c')
         self.assertEqual(data['%c'],'bar', '%c')
-
-    def testparsedate(self):
-        date = '[05/Dec/2006:10:51:44 +0000]'
-        self.assertEqual(('20061205105144','+0000'),parse_date(date))
 
 
 if __name__ is '__main__':
