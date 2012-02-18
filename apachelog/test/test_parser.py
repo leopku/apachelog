@@ -1,6 +1,6 @@
 import unittest
 
-from ..parser import ApacheLogParserError, parser, formats
+from ..parser import ApacheLogParserError, FORMATS, Parser
 
 
 class TestApacheLogParser(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestApacheLogParser(unittest.TestCase):
                       r'YPC 3.0.3; yplus 4.0.00d)\""'
 #                          r'"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; '\
 #                          r'YPC 3.0.3; yplus 4.0.00d)"'
-        self.p = parser(self.format)
+        self.p = Parser(self.format)
 
     def testpattern(self):
         self.assertEqual(self.pattern, self.p.pattern())
@@ -133,7 +133,7 @@ class TestApacheLogParser(unittest.TestCase):
         self.assertRaises(ApacheLogParserError,self.p.parse,'foobar')
 
     def testhasquotesaltn(self):
-        p = parser(r'%a \"%b\" %c')
+        p = Parser(r'%a \"%b\" %c')
         line = r'foo "xyz" bar'
         data = p.parse(line)
         self.assertEqual(data['%a'],'foo', '%a')
@@ -171,7 +171,7 @@ class TestApacheLogParserFriendlyNames(unittest.TestCase):
                       r'YPC 3.0.3; yplus 4.0.00d)\""'
 #                          r'"Mozilla/4.0 (compatible; MSIE 6.0; Windows 98; '\
 #                          r'YPC 3.0.3; yplus 4.0.00d)"'
-        self.p = parser(self.format, True)
+        self.p = Parser(self.format, True)
 
     def testpattern(self):
         self.assertEqual(self.pattern, self.p.pattern())
@@ -271,7 +271,7 @@ class TestApacheLogParserFriendlyNames(unittest.TestCase):
         self.assertRaises(ApacheLogParserError,self.p.parse,'foobar')
 
     def testhasquotesaltn(self):
-        p = parser(r'%a \"%b\" %c')
+        p = Parser(r'%a \"%b\" %c')
         line = r'foo "xyz" bar'
         data = p.parse(line)
         self.assertEqual(data['%a'],'foo', '%a')
