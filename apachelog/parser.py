@@ -24,7 +24,11 @@ FORMATS = {
     'vhcommon':r'%v %h %l %u %t \"%r\" %>s %b',
 
     # NCSA extended/combined log format
+    # (common + "%{Referer}i" + "%{User-Agent}i")
     'extended':r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"',
+
+    # Nginx default log format (extended + "$gzip_ratio")
+    'nginx':r'%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" \"%{gzip-ratio}i\"',
     }
 
 

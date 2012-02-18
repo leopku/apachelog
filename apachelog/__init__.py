@@ -55,8 +55,8 @@ directive in the format string.
 You can also re-map the field names by subclassing (or clobbering) the
 alias method.
 
-This module provides three of the most common log formats in the
-formats dictionary;
+This module provides some common log formats in the ``FORMATS``
+dictionary;
 
 >>> # Common Log Format (CLF)
 >>> p = apachelog.parser.Parser(apachelog.parser.FORMATS['common'])
@@ -64,6 +64,8 @@ formats dictionary;
 >>> p = apachelog.parser.Parser(apachelog.parser.FORMATS['vhcommon'])
 >>> # NCSA extended/combined log format
 >>> p = apachelog.parser.Parser(apachelog.parser.FORMATS['extended'])
+>>> # Nginx log format (extended + "$gzip_ratio")
+>>> p = apachelog.parser.Parser(apachelog.parser.FORMATS['nginx'])
 
 For some older notes regarding performance while reading lines from a
 file in Python, see `this post`__ by Fredrik Lundh.  Further
