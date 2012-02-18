@@ -1,3 +1,4 @@
+import __builtin__
 import gzip as _gzip
 import os.path as _os_path
 
@@ -26,5 +27,5 @@ def open(filename, openers=None):
     if openers is None:
         openers = OPENERS
     extension = _os_path.splitext(filename)[-1]
-    opener = openers.get(extension, open)
+    opener = openers.get(extension, __builtin__.open)
     return opener(filename, 'r')
