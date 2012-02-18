@@ -8,6 +8,12 @@ class Resolver (object):
     Maintains a class-level cache of resolved IPs to avoid repeated
     lookups on the same IP address.
 
+    Avoid hanging if we can't resolve a name.
+
+    >>> import socket
+    >>> if hasattr(_socket, 'setdefaulttimeout'):
+    >>>     socket.setdefaulttimeout(5)  # set 5 second timeout
+
     >>> r = Resolver()
     >>> r.resolve('198.41.0.4')
     'a.root-servers.net'
