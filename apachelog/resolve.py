@@ -12,9 +12,10 @@ class Resolver (object):
 
     >>> import socket
     >>> if hasattr(_socket, 'setdefaulttimeout'):
-    >>>     socket.setdefaulttimeout(5)  # set 5 second timeout
+    ...     socket.setdefaulttimeout(5)  # set 5 second timeout
 
     >>> r = Resolver()
+    >>> r.IP = {}  # clear cache of date from previous tests
     >>> r.resolve('198.41.0.4')
     'a.root-servers.net'
     >>> r.IP
