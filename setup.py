@@ -6,10 +6,13 @@ from distutils.core import setup
 from distutils.dist import DistributionMetadata
 if not hasattr(DistributionMetadata,'classifiers'):
     DistributionMetadata.classifiers = None
+
+from apachelog import __version__
+
     
 setup(
     name = 'apachelog',
-    version = '1.1',
+    version = __version__,
     description = 'Access log parser in python, ported from '\
     'Peter Hickman\'s Apache::LogRegex Perl moduleUniversal.',
     long_description = """\
@@ -47,5 +50,5 @@ in the log format.
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing",
         ],
-    py_modules = ['apachelog',]
+    py_modules = ['apachelog', 'apachelog.processor', 'apachelog.test']
     )
