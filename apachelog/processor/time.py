@@ -1,5 +1,3 @@
-from __future__ import division
-
 import datetime as _datetime
 
 from ..date import parse_time as _parse_time
