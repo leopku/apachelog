@@ -1,10 +1,18 @@
-"""
-The `parse_date` function is intended as a fast way to convert a log
+"""Utilities for parsing the request time field (``%t``).
+
+The ``parse_date`` function is intended as a fast way to convert a log
 date into something useful, without incurring a significant date
 parsing overhead---good enough for basic stuff but will be a problem
 if you need to deal with log from multiple servers in different
 timezones.
+
+An alternative funtion, ``parse_time``, parses the data into
+``datetime.datetime`` instances, which may be slower, but it does take
+the offset into account.  It also makes it easy to calculate time
+differences.
 """
+
+import datetime as _datetime
 
 
 MONTHS = {
@@ -36,9 +44,9 @@ def parse_date(date):
     ('20061205105144', '+0000')
 
     It does not attempt to adjust the timestamp according
-    to the timezone---this is your problem.
+    to the timezone---if you need this, use ``parse_time``.
     """
-    date = date[1:-1]
+    date = date.strip('[]')
     elems = [
         date[7:11],
         MONTHS[date[3:6]],
@@ -48,3 +56,57 @@ def parse_date(date):
         date[18:20],
         ]
     return (''.join(elems),date[21:])
+
+
+class FixedOffset(_datetime.tzinfo):
+    """Fixed offset in minutes east from UTC.
+
+    >>> f = FixedOffset(name='-0500', hours=-5)
+    >>> f.utcoffset(dt=None)
+    datetime.timedelta(-1, 68400)
+    >>> (24-5)*60*60
+    68400
+    >>> f.tzname(dt=None)
+    '-0500'
+    >>> f.dst(dt=None)
+    datetime.timedelta(0)
+    """
+    _ZERO = _datetime.timedelta(0)
+
+    def __init__(self, name, **kwargs):
+        self._offset = _datetime.timedelta(**kwargs)
+        self._name = name
+
+    def utcoffset(self, dt):
+        return self._offset
+
+    def tzname(self, dt):
+        return self._name
+
+    def dst(self, dt):
+        return self._ZERO
+
+def parse_time(date):
+    """
+    >>> import time
+    >>> dt = parse_time("[12/Feb/2012:09:55:33 -0500]")
+    >>> dt.isoformat()
+    '2012-02-12T09:55:33-05:00'
+    >>> time.mktime(dt.utctimetuple())
+    1329076533.0
+    """
+    date = date.strip('[]')
+    tzdate = date[21:].strip()
+    soff = int(date[21:22] + '1')
+    hoff = int(date[22:24])
+    moff = int(date[24:])
+    tz = FixedOffset(tzdate, hours=soff*hoff, minutes=soff*moff)
+    return _datetime.datetime(
+        year=int(date[7:11]),
+        month=int(MONTHS[date[3:6]]),
+        day=int(date[0:2]),
+        hour=int(date[12:14]),
+        minute=int(date[15:17]),
+        second=int(date[18:20]),
+        microsecond=int(0),
+        tzinfo=tz)
