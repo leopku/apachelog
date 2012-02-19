@@ -1,0 +1,13 @@
+The `original version`_ of this package (by Harry Fuecks) is on Google
+Code.  However, that version is currently unmaintained, so a `forked
+version`_ (maintained by Song Liu) has sprung up on GitHub.
+
+For usage information, browse the docstrings.
+
+To test the package, install nose_ and run::
+
+  $ nosetests --with-doctest apachelog
+
+.. _original version: http://code.google.com/p/apachelog
+.. _forked version: https://github.com/leopku
+.. _nose: http://readthedocs.org/docs/nose/en/latest/
